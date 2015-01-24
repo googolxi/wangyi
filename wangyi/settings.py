@@ -12,9 +12,13 @@ BOT_NAME = 'wangyi'
 
 SPIDER_MODULES = ['wangyi.spiders']
 NEWSPIDER_MODULE = 'wangyi.spiders'
+DATABASE = {
+            'username': 'root',
+            'password': '123',
+            'database': 'meipin'}
 
 ITEM_PIPELINES = {
-    'wangyi.pipelines.WangyiPipeline': 1
+    'wangyi.pipelines.WangyiPipeline': 300
 }
 
 

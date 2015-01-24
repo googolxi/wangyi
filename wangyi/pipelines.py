@@ -6,32 +6,19 @@
 # See: http://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
-import sys
-import MySQLdb
-import hashlib
-from scrapy.exceptions import DropItem
-from scrapy.http import Request
-import json
-import os.path
-class WangyiPipeline(object):
+from sqlalchemy import *
+from sqlalchemy.orm import sessionmaker
+from models import Ios, db_connect, create_ios_table
 
+class WangyiPipeline(object):
     def __init__(self):
-        self.conn = MySQLdb.connect(user='root', passwd='123', db='meipin', host='localhost', charset="utf8", use_unicode=True)
-        self.cursor = self.conn.cursor()
-    #log data to json file
+        engine = db_connect()
+        create_ios_table(engine)
+        self.Session = sessionmaker(bind=engine)
 
     def process_item(self, item, spider):
-#        if url is None:
-        for i in xrange(0,len(item['url'])):
-            sql = "insert ignore into ios(`title`,`url`,`pic`) values ('%s','%s','%s')" %(item['title'][i],item['url'][i],item['pic'][i])
-            self.cursor.execute(sql)
-
-            self.conn.commit()
-        #else:
-        #    for i in xrange(0,len(item['url'])):
-        #        sql = "UPDATE `apple` SET `count` = {0} WHERE `title` = {1}".format(item['count'] ,item['title'])
-        #        self.cursor.execute(sql)
-        #        self.conn.commit()
-
+        session = self.Session()
+        ios = Ios(**item)
+        session.add(ios)
+        session.commit(ios)
         return item
-
